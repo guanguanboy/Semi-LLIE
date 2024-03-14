@@ -280,7 +280,7 @@ if __name__ == "__main__":
 
     anchor_image_path = 'data/val/input/0000001_02999_d_0000005.jpg'
     positive_image_path = 'data/val/GT/0000001_02999_d_0000005.jpg'
-    negative_image_path = 'data/val/input/0000001_02999_d_0000006.jpg'
+    negative_image_path = 'data/val/input/0000001_03499_d_0000006.jpg'
 
     loss = sam_constrast_loss.evaluation_from_path(anchor_image_path, positive_image_path, negative_image_path)
     print(loss)
