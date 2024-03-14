@@ -69,10 +69,24 @@ class Trainer:
         for p in self.tmodel.parameters():
             p.requires_grad = False
 
-    def get_reliable(self, teacher_predict, student_predict, positive_list, p_name, score_r):
+    def get_reliable(self, teacher_predict, student_predict, positive_list, p_name):
         N = teacher_predict.shape[0]
-        score_t = self.iqa_metric(teacher_predict).detach().cpu().numpy()
-        score_s = self.iqa_metric(student_predict).detach().cpu().numpy()
+        score_t_list = []
+        score_s_list = []
+        score_r_list = []
+
+        for idx in range(0, N):
+            score_t = self.iqa_metric(teacher_predict[idx]).detach().cpu()
+            score_t_list.append(score_t)
+            score_s = self.iqa_metric(student_predict[idx]).detach().cpu()
+            score_s_list.append(score_s)
+            score_r = self.iqa_metric(positive_list[idx]).detach().cpu()
+            score_r_list.append(score_r) 
+
+        score_t = np.array(score_t_list)
+        score_s = np.array(score_s_list)
+        score_r = np.array(score_r_list)
+
         positive_sample = positive_list.clone()
         for idx in range(0, N):
             if score_t[idx] > score_s[idx]:
@@ -148,8 +162,8 @@ class Trainer:
             gradient_loss = self.loss_grad(get_grad(outputs_l), get_grad(label)) + self.loss_grad(outputs_g, get_grad(label))
             loss_sup = structure_loss + 0.3 * perpetual_loss + 0.1 * gradient_loss
             sup_loss.update(loss_sup.mean().item())
-            score_r = self.iqa_metric(p_list).detach().cpu().numpy()
-            p_sample = self.get_reliable(predict_target_u, outputs_ul, p_list, p_name, score_r)
+            #score_r = self.iqa_metric(p_list).detach().cpu().numpy()
+            p_sample = self.get_reliable(predict_target_u, outputs_ul, p_list, p_name)
             loss_unsu = self.loss_unsup(outputs_ul, p_sample) + self.loss_cr(outputs_ul, p_sample, unpaired_data_s)
             unsup_loss.update(loss_unsu.mean().item())
             consistency_weight = self.get_current_consistency_weight(epoch)
