@@ -186,7 +186,7 @@ class SAMContrastLoss(nn.Module):
         generated_image_path : str
             The path to the generated image
         """
-        model_type = "vit_l"
+        model_type = "vit_t"
         model_weight_path = None 
         version='1.0'
         
