@@ -1,4 +1,4 @@
-from torchvision.transforms import Normalize, Compose, Resize, ToTensor
+from torchvision.transforms import Normalize, Compose, Resize, ToTensor,ToPILImage
 
 
 def convert_to_rgb(image):
@@ -10,4 +10,12 @@ def get_transform(image_size=384):
         Resize((image_size, image_size)),
         ToTensor(),
         Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+
+def get_resize_transform(image_size=384):
+
+    return Compose([
+        ToPILImage(),                # 将Tensor转换为PIL图像
+        Resize((image_size, image_size)),
+        ToTensor(),
     ])
