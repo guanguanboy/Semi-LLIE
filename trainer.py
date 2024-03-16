@@ -15,6 +15,7 @@ from loss.losses import *
 from model import GetGradientNopadding
 from loss.contrast import ContrastLoss
 from loss.sam_contrast import SAMContrastLoss
+from loss.ram_contrast import RAMContrastLoss
 import pyiqa
 
 
@@ -37,7 +38,8 @@ class Trainer:
         self.loss_str = MyLoss().cuda()
         self.loss_grad = nn.L1Loss().cuda()
         #self.loss_cr = ContrastLoss().cuda()
-        self.loss_cr = SAMContrastLoss().cuda()
+        #self.loss_cr = SAMContrastLoss().cuda()
+        self.loss_cr = RAMContrastLoss().cuda()
         self.consistency = 0.2
         self.consistency_rampup = 100.0
         self.iqa_metric = pyiqa.create_metric('musiq', as_loss=True).cuda()

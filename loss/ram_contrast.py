@@ -15,8 +15,12 @@ from mobile_sam import sam_model_registry as mobile_sam_model_registry
 import torch.nn.functional as F
 import cv2
 import requests
-from ram import get_transform
-
+"""
+below are the implementation of RAM
+"""
+from ram.models.ram import ram as ram_fix
+from ram.models.ram_lora import ram as ram
+from ram import get_transform,get_resize_transform
 
 
 def rescale(X):
@@ -45,12 +49,24 @@ def image2tensor(path):
 
 def ram_generate_embedding_torch(sam_model, image,device):
 
-        assert image.shape == (image.shape[0], 3, 384,384), 'input image should be resized to 3*384*384'
+    #resize_transform = get_resize_transform(image_size=384)
+    #image = resize_transform(image)
+    #print('image shape = ', image.shape)
+    image_rezied = image.clone()
+    new_height = 384
+    new_width = 384
+    image_rezied = F.interpolate(image_rezied, size=(new_height, new_width), mode='bilinear', align_corners=False)
+    #image_rezied = image_rezied.squeeze(0)
+    #assert image.shape == (image.shape[0], 3, 384,384), 'input image should be resized to 3*384*384'
 
-        with torch.no_grad():
-            embedding, logits_gt, _ = sam_model.condition_forward(image.to(device), only_feature=False)
+    with torch.no_grad():
+        embedding, logits_gt, _ = sam_model.condition_forward(image_rezied.to(device), only_feature=False)
 
-        return embedding, logits_gt
+
+    #image = F.interpolate(image.unsqueeze(0), size=(256, 256), mode='bilinear', align_corners=False)
+    #image = image.squeeze(0)
+
+    return embedding, logits_gt
     
 def ram_generate_embedding(sam_model, image,device):
     if sam_model is not None:
@@ -67,13 +83,6 @@ def ram_generate_embedding(sam_model, image,device):
             embedding, logits_gt, _ = sam_model.condition_forward(resampled_image_tensor, only_feature=False)
 
         return embedding, logits_gt
-    
-
-"""
-below are the implementation of RAM
-"""
-from ram.models.ram import ram as ram_fix
-from ram.models.ram_lora import ram as ram
 
 
 class RAMContrastLoss(nn.Module):

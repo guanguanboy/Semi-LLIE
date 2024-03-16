@@ -23,8 +23,8 @@ def luminance_estimation(img):
 
 #input_dir = "data/unlabeled/input"
 #result_dir = "data/unlabeled/LA/"
-input_dir = "data/val/input/"
-result_dir = "data/val/LA/"
+input_dir = "data/unlabeled_test/input/"
+result_dir = "data/unlabeled_test/LA/"
 
 input_lists = glob(join(input_dir, "*.*"))
 for gen_path in zip(input_lists):

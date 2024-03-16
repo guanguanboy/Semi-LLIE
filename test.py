@@ -14,9 +14,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 bz = 1
 #model_root = 'pretrained/model.pth'
-model_root = 'model/ckpt/model_e200.pth'
-input_root = 'data/test'
-save_path = 'result/ckpt_0314/'
+model_root = 'model/ckpt_begin_0314/model_e200.pth'
+input_root = 'data/unlabeled_test'
+save_path = 'result/ckpt_0316/'
 if not os.path.isdir(save_path):
     os.makedirs(save_path)
 checkpoint = torch.load(model_root)
