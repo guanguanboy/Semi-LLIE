@@ -15,6 +15,7 @@ from mobile_sam import sam_model_registry as mobile_sam_model_registry
 import torch.nn.functional as F
 import cv2
 import requests
+from ram import get_transform
 
 
 
@@ -53,14 +54,13 @@ def ram_generate_embedding_torch(sam_model, image,device):
     
 def ram_generate_embedding(sam_model, image,device):
     if sam_model is not None:
-        #resampled_image = torch.from_numpy(image).unsqueeze(0).float().to(device)
-        #am_transform = ResizeLongestSide(384)
-        #resampled_image = sam_transform.apply_image(image)
-        #resampled_image = sam_transform.apply_image(image)
-
+        #ram_transform = get_transform()
+        #resampled_image_tensor = ram_transform(image)
+        
         resampled_image_tensor = torch.as_tensor(image.transpose(2, 0, 1)).float().unsqueeze(0).to(device)
-        #resampled_image = sam_model.preprocess(resampled_image_tensor[None, :, :, :])  # (1, 3, 1024, 1024)
-        print(resampled_image_tensor.shape)
+        
+        
+        #print(resampled_image_tensor.shape)
         assert resampled_image_tensor.shape == (1, 3, 384,384), 'input image should be resized to 384*384'
 
         with torch.no_grad():
