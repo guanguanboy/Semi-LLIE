@@ -354,5 +354,5 @@ if __name__ == "__main__":
     x = torch.ones([1, 3, 256, 256])
     x1 = torch.ones([1, 3, 256, 256])
     y = model(x, x1)
-    print(y.size())
+    print(y[0].shape, y[1].shape)
     print('model params: %d' % count_parameters(model))  
