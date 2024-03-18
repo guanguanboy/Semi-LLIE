@@ -7,7 +7,7 @@ from dataset_all import TrainLabeled, TrainUnlabeled, ValLabeled
 from model import AIMnet
 from utils import *
 from trainer import Trainer
-
+from model_retinexformer import RetinexFormer
 
 def main(gpu, args):
     args.local_rank = gpu
@@ -27,8 +27,11 @@ def main(gpu, args):
     print('there are total %s batches for train' % (len(paired_loader)))
     print('there are total %s batches for val' % (len(val_loader)))
     # create model
-    net = AIMnet()
-    ema_net = AIMnet()
+    #net = AIMnet()
+    #ema_net = AIMnet()
+    
+    net = RetinexFormer()
+    ema_net = RetinexFormer()
     ema_net = create_emamodel(ema_net)
     print('student model params: %d' % count_parameters(net))
     # tensorboard

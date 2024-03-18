@@ -390,7 +390,7 @@ class RetinexFormer_Single_Stage(nn.Module):
 
 
 class RetinexFormer(nn.Module):
-    def __init__(self, in_channels=3, out_channels=3, n_feat=31, stage=3, num_blocks=[1,1,1]):
+    def __init__(self, in_channels=3, out_channels=3, n_feat=40, stage=1, num_blocks=[1,2,2]):
         super(RetinexFormer, self).__init__()
         self.stage = stage
 
