@@ -6,6 +6,9 @@ import random
 from random import randrange
 from torchvision.transforms import ToTensor
 import torchvision.transforms as transforms
+from night_aug import NightAug
+import numpy as np
+
 IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
     '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP',
@@ -110,15 +113,18 @@ class TrainUnlabeled(data.Dataset):
 
         # transform
         self.transform = ToTensor()  # [0,1]
+        self.night_aug = NightAug()
 
     def __getitem__(self, index):
         A = Image.open(self.A_paths[index]).convert("RGB")
 
         A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
         # strong augmentation
-        strong_data = data_aug(A)
+        #strong_data = data_aug(A)
+        strong_data = self.night_aug.aug(self.transform(A.copy()))
+
         tensor_w = self.transform(A)
-        tensor_s = self.transform(strong_data)
+        tensor_s = strong_data
 
 
         return tensor_w, tensor_s
