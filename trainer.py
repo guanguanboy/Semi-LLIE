@@ -63,9 +63,9 @@ class Trainer:
         for ema_param, param in zip(teacher.parameters(), self.model.parameters()):
             ema_param.data = (alpha * ema_param.data) + (1 - alpha) * param.data
 
-    def predict_with_out_grad(self, image, image_l):
+    def predict_with_out_grad(self, image):
         with torch.no_grad():
-            predict_target_ul, _ = self.tmodel(image, image_l)
+            predict_target_ul, _ = self.tmodel(image)
 
         return predict_target_ul
 
@@ -146,28 +146,24 @@ class Trainer:
         tbar = range(len(self.unsupervised_loader))
         tbar = tqdm(tbar, ncols=130, leave=True)
         for i in tbar:
-            (img_data, label, img_la), (unpaired_data_w, unpaired_data_s, unpaired_la, p_list, p_name) = next(train_loader)
+            (img_data, label), (unpaired_data_w, unpaired_data_s) = next(train_loader)
             img_data = Variable(img_data).cuda(non_blocking=True)
             label = Variable(label).cuda(non_blocking=True)
-            img_la = Variable(img_la).cuda(non_blocking=True)
             unpaired_data_s = Variable(unpaired_data_s).cuda(non_blocking=True)
             unpaired_data_w = Variable(unpaired_data_w).cuda(non_blocking=True)
-            unpaired_la = Variable(unpaired_la).cuda(non_blocking=True)
-            p_list = Variable(p_list).cuda(non_blocking=True)
             # teacher output
-            predict_target_u = self.predict_with_out_grad(unpaired_data_w, unpaired_la)
+            predict_target_u = self.predict_with_out_grad(unpaired_data_w)
             origin_predict = predict_target_u.detach().clone()
             # student output
-            outputs_l, outputs_g = self.model(img_data, img_la)
-            outputs_ul, _ = self.model(unpaired_data_s, unpaired_la)
+            outputs_l, outputs_g = self.model(img_data)
+            outputs_ul, _ = self.model(unpaired_data_s)
             structure_loss = self.loss_str(outputs_l, label)
             perpetual_loss = self.loss_per(outputs_l, label)
             get_grad = GetGradientNopadding().cuda()
             gradient_loss = self.loss_grad(get_grad(outputs_l), get_grad(label)) + self.loss_grad(outputs_g, get_grad(label))
             loss_sup = structure_loss + 0.3 * perpetual_loss + 0.1 * gradient_loss
             sup_loss.update(loss_sup.mean().item())
-            #score_r = self.iqa_metric(p_list).detach().cpu().numpy()
-            #p_sample = self.get_reliable(predict_target_u, outputs_ul, p_list, p_name)
+
             p_sample = predict_target_u
             loss_unsu = self.loss_unsup(outputs_ul, p_sample) + self.loss_cr(outputs_ul, p_sample, unpaired_data_s)
             unsup_loss.update(loss_unsu.mean().item())
@@ -182,7 +178,7 @@ class Trainer:
             tbar.set_description('Train-Student Epoch {} | Ls {:.4f} Lu {:.4f}|'
                                  .format(epoch, sup_loss.avg, unsup_loss.avg))
 
-            del img_data, label, unpaired_data_w, unpaired_data_s, img_la, unpaired_la,
+            del img_data, label, unpaired_data_w, unpaired_data_s,
             with torch.no_grad():
                 self.update_teachers(teacher=self.tmodel, itera=self.curiter)
                 self.curiter = self.curiter + 1
@@ -204,12 +200,11 @@ class Trainer:
         total_loss_val = AverageMeter()
         tbar = tqdm(self.val_loader, ncols=130)
         with torch.no_grad():
-            for i, (val_data, val_label, val_la) in enumerate(tbar):
+            for i, (val_data, val_label) in enumerate(tbar):
                 val_data = Variable(val_data).cuda()
                 val_label = Variable(val_label).cuda()
-                val_la = Variable(val_la).cuda()
                 # forward
-                val_output, _ = self.model(val_data, val_la)
+                val_output, _ = self.model(val_data)
                 temp_psnr, temp_ssim, N = compute_psnr_ssim(val_output, val_label)
                 val_psnr.update(temp_psnr, N)
                 val_ssim.update(temp_ssim, N)
