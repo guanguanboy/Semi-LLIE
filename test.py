@@ -9,21 +9,22 @@ from adamp import AdamP
 # my import
 from model import AIMnet
 from dataset_all import TestData
-
+from model_retinexformer import RetinexFormer
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 bz = 1
 #model_root = 'pretrained/model.pth'
-model_root = 'model/ckpt_begin_0314/model_e200.pth'
+model_root = 'model/ckpt_begin_0316/model_e200.pth'
 input_root = 'data/unlabeled_test'
-save_path = 'result/ckpt_0316/'
+save_path = 'result/ckpt_begin_0318/'
 if not os.path.isdir(save_path):
     os.makedirs(save_path)
 checkpoint = torch.load(model_root)
 Mydata_ = TestData(input_root)
 data_load = data.DataLoader(Mydata_, batch_size=bz)
 
-model = AIMnet().cuda()
+#model = AIMnet().cuda()
+model = RetinexFormer().cuda()
 model = nn.DataParallel(model, device_ids=[0, 1])
 optimizer = AdamP(model.parameters(), lr=2e-4, betas=(0.9, 0.999), weight_decay=1e-4)
 model.load_state_dict(checkpoint['state_dict'])
