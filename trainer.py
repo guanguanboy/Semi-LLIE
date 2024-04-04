@@ -122,8 +122,8 @@ class Trainer:
             print('[%d] main_loss: %.6f, train psnr: %.6f, val psnr: %.6f, lr: %.8f' % (
                 epoch, loss_val, train_psnr, val_psnr, self.lr_scheduler_s.get_last_lr()[0]))
 
-            for name, param in self.model.named_parameters():
-                self.writer.add_histogram(f"{name}", param, 0)
+            #for name, param in self.model.named_parameters():
+            #    self.writer.add_histogram(f"{name}", param, 0)
 
             # Save checkpoint
             if epoch % self.save_period == 0 and self.args.local_rank <= 0:
@@ -167,7 +167,8 @@ class Trainer:
             loss_sup = structure_loss + 0.3 * perpetual_loss + 0.1 * gradient_loss
             sup_loss.update(loss_sup.mean().item())
             #score_r = self.iqa_metric(p_list).detach().cpu().numpy()
-            p_sample = self.get_reliable(predict_target_u, outputs_ul, p_list, p_name)
+            #p_sample = self.get_reliable(predict_target_u, outputs_ul, p_list, p_name)
+            p_sample = predict_target_u
             loss_unsu = self.loss_unsup(outputs_ul, p_sample) + self.loss_cr(outputs_ul, p_sample, unpaired_data_s)
             unsup_loss.update(loss_unsu.mean().item())
             consistency_weight = self.get_current_consistency_weight(epoch)
