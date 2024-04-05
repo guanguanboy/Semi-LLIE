@@ -57,7 +57,7 @@ if __name__ == '__main__':
     parser.add_argument('--resume_path', default='/path/to/your/net.pth', type=str, help='if resume')
     parser.add_argument('--use_pretain', default='False', type=str, help='use pretained model')
     parser.add_argument('--pretrained_path', default='/path/to/pretained/net.pth', type=str, help='if pretrained')
-    parser.add_argument('--data_dir', default='./data/LOLv1', type=str, help='data root path')
+    parser.add_argument('--data_dir', default='./data/FiveK', type=str, help='data root path')
     parser.add_argument('--save_path', default='./model/five5k_ckpt_begin_0405/', type=str)
     parser.add_argument('--log_dir', default='./model/log', type=str)
 
