@@ -65,7 +65,7 @@ class Trainer:
 
     def predict_with_out_grad(self, image):
         with torch.no_grad():
-            predict_target_ul, _ = self.tmodel(image)
+            predict_target_ul = self.tmodel(image)
 
         return predict_target_ul
 
@@ -155,13 +155,13 @@ class Trainer:
             predict_target_u = self.predict_with_out_grad(unpaired_data_w)
             origin_predict = predict_target_u.detach().clone()
             # student output
-            outputs_l, outputs_g = self.model(img_data)
-            outputs_ul, _ = self.model(unpaired_data_s)
+            outputs_l = self.model(img_data)
+            outputs_ul= self.model(unpaired_data_s)
             structure_loss = self.loss_str(outputs_l, label)
             perpetual_loss = self.loss_per(outputs_l, label)
-            get_grad = GetGradientNopadding().cuda()
-            gradient_loss = self.loss_grad(get_grad(outputs_l), get_grad(label)) + self.loss_grad(outputs_g, get_grad(label))
-            loss_sup = structure_loss + 0.3 * perpetual_loss + 0.1 * gradient_loss
+            #get_grad = GetGradientNopadding().cuda()
+            #gradient_loss = self.loss_grad(get_grad(outputs_l), get_grad(label)) + self.loss_grad(outputs_g, get_grad(label))
+            loss_sup = structure_loss + 0.3 * perpetual_loss #+ 0.1 * gradient_loss
             sup_loss.update(loss_sup.mean().item())
 
             p_sample = predict_target_u
@@ -204,7 +204,7 @@ class Trainer:
                 val_data = Variable(val_data).cuda()
                 val_label = Variable(val_label).cuda()
                 # forward
-                val_output, _ = self.model(val_data)
+                val_output = self.model(val_data)
                 temp_psnr, temp_ssim, N = compute_psnr_ssim(val_output, val_label)
                 val_psnr.update(temp_psnr, N)
                 val_ssim.update(temp_ssim, N)

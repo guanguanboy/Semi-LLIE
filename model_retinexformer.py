@@ -399,7 +399,7 @@ class RetinexFormer(nn.Module):
         
         self.body = nn.Sequential(*modules_body)
     
-        self.get_gradient = GetGradientNopadding()
+        #self.get_gradient = GetGradientNopadding()
 
     def forward(self, x, x2=None):
         """
@@ -408,9 +408,9 @@ class RetinexFormer(nn.Module):
         """
         out = self.body(x)
 
-        res_grad = self.get_gradient(out)
+        #res_grad = self.get_gradient(out)
 
-        return out, res_grad
+        return out
 
 if __name__ == '__main__':
     from fvcore.nn import FlopCountAnalysis
