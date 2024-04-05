@@ -3,7 +3,9 @@ import argparse
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 # my import
-from dataset_all import TrainLabeled, TrainUnlabeled, ValLabeled
+#from dataset_all import TrainLabeled, TrainUnlabeled, ValLabeled
+from dataset_simple import TrainLabeled, TrainUnlabeled, ValLabeled
+
 from model import AIMnet
 from utils import *
 from trainer import Trainer
@@ -56,7 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_pretain', default='False', type=str, help='use pretained model')
     parser.add_argument('--pretrained_path', default='/path/to/pretained/net.pth', type=str, help='if pretrained')
     parser.add_argument('--data_dir', default='./data', type=str, help='data root path')
-    parser.add_argument('--save_path', default='./model/ckpt_begin_0316/', type=str)
+    parser.add_argument('--save_path', default='./model/ckpt_begin_0405/', type=str)
     parser.add_argument('--log_dir', default='./model/log', type=str)
 
     args = parser.parse_args()
