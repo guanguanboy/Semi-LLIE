@@ -8,15 +8,15 @@ from PIL import Image
 from adamp import AdamP
 # my import
 from model import AIMnet
-from dataset_all import TestData
+from dataset_simple import TestData
 from model_retinexformer import RetinexFormer
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 bz = 1
 #model_root = 'pretrained/model.pth'
-model_root = 'model/ckpt_begin_0316/model_e200.pth'
-input_root = 'data/unlabeled_test'
-save_path = 'result/ckpt_begin_0318/'
+model_root = 'model/lol_ckpt_begin_0404/model_e200.pth'
+input_root = 'data/LOLv1/val'
+save_path = 'result/lol_ckpt_begin_0404/'
 if not os.path.isdir(save_path):
     os.makedirs(save_path)
 checkpoint = torch.load(model_root)
@@ -54,7 +54,7 @@ if 1:
         data_la = torch.nn.functional.interpolate(data_la, size=(new_height, new_width), mode='bilinear', align_corners=False)
 
         with torch.no_grad():
-            result, _ = model(data_input, data_la)
+            result = model(data_input, data_la)
             result = torch.nn.functional.interpolate(result, size=(original_height, original_width), mode='bilinear', align_corners=False)
 
             name = Mydata_.A_paths[data_idx].split('/')[3]

@@ -412,6 +412,29 @@ class RetinexFormer(nn.Module):
 
         return out
 
+class RetinexFormerWithGrad(nn.Module):
+    def __init__(self, in_channels=3, out_channels=3, n_feat=40, stage=1, num_blocks=[1,2,2]):
+        super(RetinexFormerWithGrad, self).__init__()
+        self.stage = stage
+
+        modules_body = [RetinexFormer_Single_Stage(in_channels=in_channels, out_channels=out_channels, n_feat=n_feat, level=2, num_blocks=num_blocks)
+                        for _ in range(stage)]
+        
+        self.body = nn.Sequential(*modules_body)
+    
+        self.get_gradient = GetGradientNopadding()
+
+    def forward(self, x, x2=None):
+        """
+        x: [b,c,h,w]
+        return out:[b,c,h,w]
+        """
+        out = self.body(x)
+
+        res_grad = self.get_gradient(out)
+
+        return out, res_grad
+    
 if __name__ == '__main__':
     from fvcore.nn import FlopCountAnalysis
     
