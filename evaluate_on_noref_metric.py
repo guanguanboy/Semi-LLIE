@@ -21,8 +21,7 @@ print(pyiqa.list_models())
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 #fid_score = fid_metric('/data/liguanlin/codes/research_project/Semi-UIR/data/unlabeled_test/input/', '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0405/')
-GT_path = '/data/liguanlin/codes/research_project/Semi-UIR/data/LOLv1/val/GT/'
-result_path = '/data/liguanlin/codes/research_project/Semi-UIR/result/lol_ckpt_begin_0404/'
+result_path = '/data/liguanlin/codes/research_project/Semi-UIR/result/lol_ckpt_begin_0404_test_on_VV/'
 
 #CLIPIQA
 #MUSIQ

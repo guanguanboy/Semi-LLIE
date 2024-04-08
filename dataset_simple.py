@@ -132,7 +132,38 @@ class TrainUnlabeled(data.Dataset):
     def __len__(self):
         return len(self.A_paths)
 
+class TrainUnlabeledOrignAug(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
 
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+        # strong augmentation
+        strong_data = data_aug(A)
+
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+
+        return tensor_w, tensor_s
+
+    def __len__(self):
+        return len(self.A_paths)
+    
 class ValLabeled(data.Dataset):
     def __init__(self, dataroot, phase, finesize):
         super().__init__()

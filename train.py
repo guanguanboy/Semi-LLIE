@@ -4,12 +4,13 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 # my import
 #from dataset_all import TrainLabeled, TrainUnlabeled, ValLabeled
-from dataset_simple import TrainLabeled, TrainUnlabeled, ValLabeled
+from dataset_simple import TrainLabeled, TrainUnlabeled, ValLabeled, TrainUnlabeledOrignAug
 
 from model import AIMnet
 from utils import *
 from trainer import Trainer
-from model_retinexformer import RetinexFormer
+from trainer_with_grad import TrainerWithGrad
+from model_retinexformer import RetinexFormerWithGrad
 
 def main(gpu, args):
     args.local_rank = gpu
@@ -18,7 +19,7 @@ def main(gpu, args):
     # load data
     train_folder = args.data_dir
     paired_dataset = TrainLabeled(dataroot=train_folder, phase='labeled', finesize=args.crop_size)
-    unpaired_dataset = TrainUnlabeled(dataroot=train_folder, phase='unlabeled', finesize=args.crop_size)
+    unpaired_dataset = TrainUnlabeledOrignAug(dataroot=train_folder, phase='unlabeled', finesize=args.crop_size)
     val_dataset = ValLabeled(dataroot=train_folder, phase='val', finesize=args.crop_size)
     paired_sampler = None
     unpaired_sampler = None
@@ -32,13 +33,13 @@ def main(gpu, args):
     #net = AIMnet()
     #ema_net = AIMnet()
     
-    net = RetinexFormer()
-    ema_net = RetinexFormer()
+    net = RetinexFormerWithGrad()
+    ema_net = RetinexFormerWithGrad()
     ema_net = create_emamodel(ema_net)
     print('student model params: %d' % count_parameters(net))
     # tensorboard
     writer = SummaryWriter(log_dir=args.log_dir)
-    trainer = Trainer(model=net, tmodel=ema_net, args=args, supervised_loader=paired_loader,
+    trainer = TrainerWithGrad(model=net, tmodel=ema_net, args=args, supervised_loader=paired_loader,
                       unsupervised_loader=unpaired_loader,
                       val_loader=val_loader, iter_per_epoch=len(unpaired_loader), writer=writer)
 
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_pretain', default='False', type=str, help='use pretained model')
     parser.add_argument('--pretrained_path', default='/path/to/pretained/net.pth', type=str, help='if pretrained')
     parser.add_argument('--data_dir', default='./data', type=str, help='data root path')
-    parser.add_argument('--save_path', default='./model/ckpt_begin_0405/', type=str)
+    parser.add_argument('--save_path', default='./model/ckpt_begin_0408_on_visdrone/', type=str)
     parser.add_argument('--log_dir', default='./model/log', type=str)
 
     args = parser.parse_args()
