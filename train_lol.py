@@ -60,6 +60,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', default='./data/FiveK', type=str, help='data root path')
     parser.add_argument('--save_path', default='./model/five5k_ckpt_begin_0405/', type=str)
     parser.add_argument('--log_dir', default='./model/log', type=str)
+    parser.add_argument('--start_epoch', default=1, type=int)
 
     args = parser.parse_args()
     if not os.path.isdir(args.save_path):
