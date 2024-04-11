@@ -31,7 +31,7 @@ class TrainerWithGrad:
         self.model = model
         self.tmodel = tmodel
         self.gamma = 0.5
-        self.start_epoch = 1
+        self.start_epoch = args.start_epoch
         self.epochs = args.num_epochs
         self.save_period = 20
         self.loss_unsup = nn.L1Loss()
