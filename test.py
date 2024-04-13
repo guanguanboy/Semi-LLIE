@@ -10,7 +10,7 @@ from adamp import AdamP
 from model import AIMnet
 from dataset_simple import TestData
 from model_retinexformer import RetinexFormer
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 bz = 1
 #model_root = 'pretrained/model.pth'
@@ -57,7 +57,7 @@ if 1:
             result = model(data_input, data_la)
             result = torch.nn.functional.interpolate(result, size=(original_height, original_width), mode='bilinear', align_corners=False)
 
-            name = Mydata_.A_paths[data_idx].split('/')[3]
+            name = Mydata_.A_paths[data_idx].split('/')[-1]
             print(name)
             temp_res = np.transpose(result[0, :].cpu().detach().numpy(), (1, 2, 0))
             temp_res[temp_res > 1] = 1
