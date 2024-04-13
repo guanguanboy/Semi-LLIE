@@ -10,13 +10,13 @@ from adamp import AdamP
 from model import AIMnet
 from dataset_simple import TestData
 from model_retinexformer import RetinexFormerWithGrad
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 bz = 1
 #model_root = 'pretrained/model.pth'
-model_root = 'model/lol_ckpt_begin_0404/model_e200.pth'
+model_root = 'model/ckpt_begin_0410_on_LOLv1_new/model_e200.pth'
 input_root = 'data/VV'
-save_path = 'result/lol_ckpt_begin_0404_test_on_VV/'
+save_path = 'result/ckpt_begin_0410_on_LOLv1_new/VV/'
 if not os.path.isdir(save_path):
     os.makedirs(save_path)
 checkpoint = torch.load(model_root)
@@ -25,7 +25,7 @@ data_load = data.DataLoader(Mydata_, batch_size=bz)
 
 #model = AIMnet().cuda()
 model = RetinexFormerWithGrad().cuda()
-model = nn.DataParallel(model, device_ids=[0, 1])
+model = nn.DataParallel(model)
 optimizer = AdamP(model.parameters(), lr=2e-4, betas=(0.9, 0.999), weight_decay=1e-4)
 model.load_state_dict(checkpoint['state_dict'])
 optimizer.load_state_dict(checkpoint['optimizer_dict'])
@@ -57,7 +57,7 @@ if 1:
             result,_ = model(data_input)
             result = torch.nn.functional.interpolate(result, size=(original_height, original_width), mode='bilinear', align_corners=False)
 
-            name = Mydata_.A_paths[data_idx].split('/')[3]
+            name = Mydata_.A_paths[data_idx].split('/')[-1]
             print(name)
             temp_res = np.transpose(result[0, :].cpu().detach().numpy(), (1, 2, 0))
             temp_res[temp_res > 1] = 1

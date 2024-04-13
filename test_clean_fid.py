@@ -14,7 +14,7 @@ import numpy as np
 import pytorch_ssim
 import torchvision.transforms.functional as tf
 from PIL import Image
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+#os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 # list all available metrics
 print(pyiqa.list_models())
@@ -23,8 +23,8 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 fid_metric = pyiqa.create_metric('fid').to(device)
 #fid_score = fid_metric('/data/liguanlin/codes/research_project/Semi-UIR/data/unlabeled_test/input/', '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0405/')
 GT_path = '/data/liguanlin/codes/research_project/Semi-UIR/data/LOLv1/val/GT/'
-result_path = '/data/liguanlin/codes/research_project/Semi-UIR/result/lol_ckpt_begin_0404/'
-fid_score = fid_metric('/data/liguanlin/codes/research_project/Semi-UIR/data/LOLv1/val/GT/', '/data/liguanlin/codes/research_project/Semi-UIR/result/lol_ckpt_begin_0404/')
+result_path = '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0410_on_LOLv1_new/'
+fid_score = fid_metric('/data/liguanlin/codes/research_project/Semi-UIR/data/LOLv1/val/input/', '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0410_on_LOLv1_new/')
 print('fid_score=', fid_score)
 
 
