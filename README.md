@@ -6,10 +6,12 @@
 Xidian University, McMaster University
 
 ## Introduction
-This is the official repository for our recent paper, "Contrastive Semi-supervised Learning for Underwater Image Restoration via Reliable Bank [link](https://arxiv.org/pdf/2303.09101.pdf)", where more implementation details are presented.
+This is the official repository for our recent paper, "Semantics-aware Contrastive Semi-supervised Learning for Low-light Drone Image Enhancement .
 
 ## Abstract
-Despite the remarkable achievement of recent underwater image restoration techniques, the lack of labeled data has become a major hurdle for further progress. In this work, we propose a mean-teacher based **Semi**-supervised **U**nderwater **I**mage **R**estoration (**Semi-UIR**) framework to incorporate the unlabeled data into network training. However, the naive mean-teacher method suffers from two main problems: (1) The consistency loss used in training might become ineffective when the teacher's prediction is wrong. (2) Using L1 distance may cause the network to overfit wrong labels, resulting in confirmation bias. To address the above problems, we first introduce a reliable bank to store the ``best-ever" outputs as pseudo ground truth. To assess the quality of outputs, we conduct an empirical analysis based on the monotonicity property to select the most trustworthy NR-IQA method. Besides, in view of the confirmation bias problem, we incorporate contrastive regularization to prevent the overfitting on wrong labels. Experimental results on both full-reference and non-reference underwater benchmarks demonstrate that our algorithm has obvious improvement over SOTA methods quantitatively and qualitatively.
+Despite the impressive advancements made in recent low-light image enhancement techniques, the scarcity of annotated data has emerged as a significant obstacle to further advancements. To address this issue, we propose a mean-teacher-based Semi-supervised low-light enhancement framework to utilize the unlabeled data for model optimization. However, the naive implementation of the mean-teacher method encounters two primary challenges. The utilization of pixel-wise distance in the mean-teacher method may lead to the overfitting of incorrect labels, which results in confirmation bias. To mitigate this issue, we introduce semantics-aware contrastive regularization as a preventive measure against overfitting on incorrect labels.
+
+Experimental results demonstrate that our method achieves remarkable quantitative and qualitative improvements over the existing methods.
 
 <img src='overview.png'>
 
@@ -36,19 +38,16 @@ data
 ├── labeled
 │   ├── input
 │   └── GT
-│   └── LA
+│   
 ├── unlabeled
 │   ├── input
-│   └── LA
-│   └── candidate
+│
 └── val
     ├── input
     └── GT
-    └── LA
 └── test
     ├── benchmarkA
         ├── input
-        └── LA
 ```
 
 You can download the training set and test sets from benchmarks [UIEB](https://li-chongyi.github.io/proj_benchmark.html), [EUVP](https://irvlab.cs.umn.edu/resources/euvp-dataset), [UWCNN](https://li-chongyi.github.io/proj_underwater_image_synthesis.html), [Sea-thru](http://csms.haifa.ac.il/profiles/tTreibitz/datasets/sea_thru/index.html), [RUIE](https://github.com/dlut-dimt/Realworld-Underwater-Image-Enhancement-RUIE-Benchmark). 
