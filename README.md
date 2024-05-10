@@ -57,6 +57,14 @@ You can download the training set and test sets from benchmarks [UIEB](https://l
 
 Put your test benchmark under `data/test` folder, run `estimate_illumination.py` to get its illumination map.
 
+Setup the following three paths in `test.py`
+
+```
+model_root = 'model/lol_ckpt_begin_0404/model_e200.pth'
+input_root = 'data/LOLv1/val'
+save_path = 'result/lol_ckpt_begin_0404/'
+```
+
 Run `test.py` and you can find results from folder `result`.
 
 ```
@@ -67,6 +75,17 @@ python test_withgrad.py
 
 To train the framework, run `create_candiate.py` to initialize reliable bank. Hyper-parameters can be modified in `trainer.py`.
 
+Setup the following optioins in `train.py`: 
+```
+    parser.add_argument('--data_dir', default='./data/LOLv2_real', type=str, help='data root path')
+    parser.add_argument('--save_path', default='./model/ckpt_begin_04014_on_LOLv2_real/', type=str)
+```
+
+For continue trainning, please setup:
+```
+    parser.add_argument('--resume', default='False', type=str, help='if resume')
+    parser.add_argument('--resume_path', default='./model/ckpt_begin_0408_on_visdrone/model_e160.pth', type=str, help='if resume')
+```
 Run `train.py` to start training.
 
 ```
