@@ -1,5 +1,4 @@
-# Contrastive Semi-supervised Learning for Underwater Image Restoration via Reliable Bank (CVPR 2023)
-Shirui Huang*, Keyan Wang*+, Huan Liu, Jun Chen, Yunsong Li
+# Semantics-aware Contrastive Semi-supervised Learning for Low-light Drone Image Enhancement
 
 *Equal Contributions
 +Corresponding Author
@@ -60,11 +59,19 @@ Put your test benchmark under `data/test` folder, run `estimate_illumination.py`
 
 Run `test.py` and you can find results from folder `result`.
 
+```
+python test_withgrad.py
+```
+
 ## Train
 
 To train the framework, run `create_candiate.py` to initialize reliable bank. Hyper-parameters can be modified in `trainer.py`.
 
 Run `train.py` to start training.
+
+```
+CUDA_VISIBLE_DEVICES=2 nohup python train_lolv1.py --gpus 1 --train_batchsize 6 > logs/train_on_lolv1_visdrone_0414.txt
+```
 
 ## Citation
 If you use the code in this repo for your work, please cite the following bib entries:
