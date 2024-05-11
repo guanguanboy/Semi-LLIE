@@ -11,6 +11,7 @@ from utils import *
 from trainer import Trainer
 from trainer_with_grad import TrainerWithGrad
 from model_retinexformer import RetinexFormerWithGrad
+from model_mnnet import lowlightnet3
 
 def main(gpu, args):
     args.local_rank = gpu
@@ -33,8 +34,8 @@ def main(gpu, args):
     #net = AIMnet()
     #ema_net = AIMnet()
     
-    net = RetinexFormerWithGrad()
-    ema_net = RetinexFormerWithGrad()
+    net = lowlightnet3()
+    ema_net = lowlightnet3()
     ema_net = create_emamodel(ema_net)
     print('student model params: %d' % count_parameters(net))
     # tensorboard
@@ -58,8 +59,8 @@ if __name__ == '__main__':
     parser.add_argument('--resume_path', default='./model/ckpt_begin_0408_on_visdrone/model_e160.pth', type=str, help='if resume')
     parser.add_argument('--use_pretain', default='False', type=str, help='use pretained model')
     parser.add_argument('--pretrained_path', default='/path/to/pretained/net.pth', type=str, help='if pretrained')
-    parser.add_argument('--data_dir', default='./data/LSRW', type=str, help='data root path')
-    parser.add_argument('--save_path', default='./model/ckpt_begin_04010_on_LSRW/', type=str)
+    parser.add_argument('--data_dir', default='./data', type=str, help='data root path')
+    parser.add_argument('--save_path', default='./model/ckpt_begin_0510_on_Visdrone/', type=str)
     parser.add_argument('--log_dir', default='./model/log', type=str)
     parser.add_argument('--start_epoch', default=1, type=int)
 
