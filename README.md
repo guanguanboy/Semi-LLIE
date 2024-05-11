@@ -25,6 +25,39 @@ Experimental results demonstrate that our method achieves remarkable quantitativ
 
 Other dependencies are listed in `requirements.txt`
 
+Install Segment Anything:
+
+```
+pip install git+https://github.com/facebookresearch/segment-anything.git
+```
+
+or clone the repository locally and install with
+
+```
+git clone git@github.com:facebookresearch/segment-anything.git
+cd segment-anything; pip install -e .
+```
+
+Install Mobile Segment Anything:
+
+```
+pip install git+https://github.com/ChaoningZhang/MobileSAM.git
+```
+
+or clone the repository locally and install with
+
+```
+git clone git@github.com:ChaoningZhang/MobileSAM.git
+cd MobileSAM; pip install -e .
+```
+
+The following optional dependencies are necessary for mask post-processing, saving masks in COCO format, the example notebooks, and exporting the model in ONNX format. `jupyter` is also required to run the example notebooks.
+
+```
+pip install opencv-python timm transformer fairscale loralib pyiqa
+```
+-i https://pypi.tuna.tsinghua.edu.cn/simple
+
 ## Data Preparation
 
 Run `data_split.py` to randomly split your paired datasets into training, validation and testing set.
