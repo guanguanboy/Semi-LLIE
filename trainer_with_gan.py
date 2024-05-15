@@ -468,7 +468,7 @@ class Trainer:
             self.set_requires_grad(self.netD, False)  #冻结distriminator
             self.optimizer_s.zero_grad()
             #backward_G
-            pred_fake = outputs_l #discriminator给到
+            pred_fake = self.netD(outputs_l) #discriminator给到
             loss_G_GAN = self.criterionGAN(pred_fake, True)
             total_loss = total_loss + loss_G_GAN
             total_loss.backward()
