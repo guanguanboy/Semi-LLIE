@@ -923,5 +923,5 @@ if __name__ == '__main__':
     n_param = sum([p.nelement() for p in model.parameters()])  # 所有参数数量
     print(f'GMac:{flops.total()/(1024*1024*1024)}')
     print(f'Params:{n_param}')
-    output = model(inputs)
+    output,out_grad = model(inputs)
     print(output.shape)

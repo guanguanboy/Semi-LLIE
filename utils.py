@@ -89,7 +89,22 @@ def compute_psnr_ssim(recoverd, clean):
 
     for i in range(recoverd.shape[0]):
         psnr += peak_signal_noise_ratio(clean[i], recoverd[i], data_range=1)
-        ssim += structural_similarity(clean[i], recoverd[i], data_range=1, multichannel=True)
+        ssim += structural_similarity(clean[i], recoverd[i], data_range=1, channel_axis=-1)
 
     return psnr / recoverd.shape[0], ssim / recoverd.shape[0], recoverd.shape[0]
 
+
+def compute_psnr_ssim_v2(recoverd, clean):
+    assert recoverd.shape == clean.shape
+    recoverd = np.clip(recoverd.detach().cpu().numpy(), 0, 1)
+    clean = np.clip(clean.detach().cpu().numpy(), 0, 1)
+    recoverd = recoverd.transpose(0, 2, 3, 1)  
+    clean = clean.transpose(0, 2, 3, 1)
+    psnr = 0
+    ssim = 0
+
+    for i in range(recoverd.shape[0]):
+        psnr += peak_signal_noise_ratio(clean[i], recoverd[i], data_range=1)
+        ssim += structural_similarity(clean[i], recoverd[i], data_range=1, multichannel=True)
+
+    return psnr / recoverd.shape[0], ssim / recoverd.shape[0], recoverd.shape[0]
