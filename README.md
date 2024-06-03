@@ -58,6 +58,24 @@ pip install opencv-python timm transformer fairscale loralib pyiqa
 ```
 -i https://pypi.tuna.tsinghua.edu.cn/simple
 
+```
+pip install adamp -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+```
+pip install -U openmim -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+mim install mmcv
+```
+```
+pip uninstall timm
+pip install timm -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+```
+pip install Pillow==9.2.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
 ## Data Preparation
 
 Run `data_split.py` to randomly split your paired datasets into training, validation and testing set.
