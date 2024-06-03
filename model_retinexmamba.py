@@ -1294,6 +1294,7 @@ class IGAB(nn.Module):
 
         super().__init__()
         self.blocks = nn.ModuleList([])
+        self.device = None
         for _ in range(num_blocks):
             self.blocks.append(nn.ModuleList([
                 IFA(dim_2=dim,dim = dim,num_heads = heads,ffn_expansion_factor=2.66 ,bias=True, LayerNorm_type='WithBias'),
@@ -1313,11 +1314,12 @@ class IGAB(nn.Module):
             Tensor: 输出特征张量，形状为 [b, c, h, w]。
         """
         # x = x.permute(0, 2, 3, 1)  # 调整张量维度以匹配预期的输入格式[b, h, w, c]
-      
+
         for (trans,ss2d,ff) in self.blocks:
             y=trans(x,illu_fea).permute(0, 2, 3, 1)
             #应用SS2D模块并进行残差连接
-            x=ss2d(y)+ x.permute(0, 2, 3, 1)  #当我创建了一个类之后,如果继承nn并且自己定义了一个forward,那么nn会把hook挂到对象中,直接用对象(forward的参数)就能调用forward函数
+            x = x.permute(0, 2, 3, 1)
+            x=ss2d(y) + x  #当我创建了一个类之后,如果继承nn并且自己定义了一个forward,那么nn会把hook挂到对象中,直接用对象(forward的参数)就能调用forward函数
             # print("经过ss2d的特征大小",x.shape)
             # 应用前馈网络并进行残差连接
             x = ff(x) + x# bhwc
@@ -1519,13 +1521,40 @@ class RetinexMamba_Single_Stage(nn.Module):
 
         return output_img
 
+class GetGradientNopadding(nn.Module):
+    def __init__(self):
+        super(GetGradientNopadding, self).__init__()
+        kernel_v = [[0, -1, 0],
+                    [0, 0, 0],
+                    [0, 1, 0]]
+        kernel_h = [[0, 0, 0],
+                    [-1, 0, 1],
+                    [0, 0, 0]]
+        kernel_h = torch.FloatTensor(kernel_h).unsqueeze(0).unsqueeze(0)
+        kernel_v = torch.FloatTensor(kernel_v).unsqueeze(0).unsqueeze(0)
+        self.weight_h = nn.Parameter(data=kernel_h, requires_grad=False)
 
+        self.weight_v = nn.Parameter(data=kernel_v, requires_grad=False)
+
+    def forward(self, inp_feat):
+        x_list = []
+        for i in range(inp_feat.shape[1]):
+            x_i = inp_feat[:, i]
+            x_i_v = F.conv2d(x_i.unsqueeze(1), self.weight_v, padding=1)
+            x_i_h = F.conv2d(x_i.unsqueeze(1), self.weight_h, padding=1)
+            x_i = torch.sqrt(torch.pow(x_i_v, 2) + torch.pow(x_i_h, 2) + 1e-6)
+            x_list.append(x_i)
+
+        res = torch.cat(x_list, dim=1)
+
+        return res
+    
 class RetinexMamba(nn.Module):
     """
     多阶段 Retinex 图像处理网络，每个阶段都通过 RetinexMamba_Single_Stage 来实现，
     进行图像的照明估计和增强。
     """
-    def __init__(self, in_channels=3, out_channels=3, n_feat=31, stage=3, num_blocks=[1, 1, 1], d_state=16):
+    def __init__(self, in_channels=3, out_channels=3, n_feat=40, stage=1, num_blocks=[1, 2, 2], d_state=16):
         """
         初始化 Retinex 图像处理网络。
 
@@ -1546,6 +1575,8 @@ class RetinexMamba(nn.Module):
         # 将所有阶段模块封装成一个顺序模型
         self.body = nn.Sequential(*modules_body)
     
+        self.get_gradient = GetGradientNopadding()
+
     def forward(self, x):
         """
         定义网络的前向传播路径。
@@ -1558,17 +1589,20 @@ class RetinexMamba(nn.Module):
         """
         # 通过网络体进行图像处理
         out = self.body(x)
+        res_grad = self.get_gradient(out)
 
-        return out
+        return out, res_grad
 
 
 if __name__ == '__main__':
     from fvcore.nn import FlopCountAnalysis
+    device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+
     model = RetinexMamba(stage=1,n_feat=40,num_blocks=[1,2,2]).cuda()
     print(model)
     inputs = torch.randn((1, 3, 64, 64)).cuda()
-    output = model(inputs)
-    print(output.shape)
+    output, res_grad = model(inputs)
+    print(output.shape, res_grad.shape)
     flops = FlopCountAnalysis(model,inputs)
     n_param = sum([p.nelement() for p in model.parameters()])  # 所有参数数量
     print(f'GMac:{flops.total()/(1024*1024*1024)}')
