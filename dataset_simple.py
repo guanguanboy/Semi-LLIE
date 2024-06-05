@@ -132,6 +132,41 @@ class TrainUnlabeled(data.Dataset):
     def __len__(self):
         return len(self.A_paths)
 
+class TrainUnlabeledWithBank(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
+
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+        self.dir_D = os.path.join(self.root, self.phase + '/candidate')
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+        self.D_paths = sorted(make_dataset(self.dir_D))
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+        candidate = Image.open(self.D_paths[index]).convert('RGB')
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+
+        # strong augmentation
+        strong_data = data_aug(A)
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+        tensor_d = self.transform(candidate)
+        name = self.D_paths[index]
+
+        return tensor_w, tensor_s, tensor_d, name
+
+    def __len__(self):
+        return len(self.A_paths)
+
+
 class TrainUnlabeledOrignAug(data.Dataset):
     def __init__(self, dataroot, phase, finesize):
         super().__init__()
@@ -155,6 +190,136 @@ class TrainUnlabeledOrignAug(data.Dataset):
         A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
         # strong augmentation
         strong_data = data_aug(A)
+
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+
+        return tensor_w, tensor_s
+
+    def __len__(self):
+        return len(self.A_paths)
+
+
+class TrainUnlabeledOrignAugBaseline(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
+
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+        # strong augmentation
+        #strong_data = data_aug(A)
+        strong_data = A
+
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+
+        return tensor_w, tensor_s
+
+    def __len__(self):
+        return len(self.A_paths)
+
+class TrainUnlabeledOrignAugwograyscale(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
+
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+        # strong augmentation
+        strong_data = data_aug_wo_grayscale(A)
+
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+
+        return tensor_w, tensor_s
+
+    def __len__(self):
+        return len(self.A_paths)
+
+class TrainUnlabeledOrignAugwocolorjitt(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
+
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+        # strong augmentation
+        strong_data = data_aug_wo_grayscale(A)
+
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+
+        return tensor_w, tensor_s
+
+    def __len__(self):
+        return len(self.A_paths)
+
+class TrainUnlabeledOrignAugwoblur(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
+
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+        # strong augmentation
+        strong_data = data_aug_wo_grayscale(A)
 
         tensor_w = self.transform(A)
         tensor_s = self.transform(strong_data)
@@ -236,3 +401,41 @@ def data_aug(images):
     return strong_aug
 
 
+def data_aug_wo_grayscale(images):
+    kernel_size = int(random.random() * 4.95)
+    kernel_size = kernel_size + 1 if kernel_size % 2 == 0 else kernel_size
+    blurring_image = transforms.GaussianBlur(kernel_size, sigma=(0.1, 2.0))
+    color_jitter = transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.25)
+    strong_aug = images
+    if random.random() < 0.8:
+        strong_aug = color_jitter(strong_aug)
+    #strong_aug = transforms.RandomGrayscale(p=0.2)(strong_aug)
+    if random.random() < 0.5:
+        strong_aug = blurring_image(strong_aug)
+    return strong_aug
+
+def data_aug_wo_blur(images):
+    kernel_size = int(random.random() * 4.95)
+    kernel_size = kernel_size + 1 if kernel_size % 2 == 0 else kernel_size
+    blurring_image = transforms.GaussianBlur(kernel_size, sigma=(0.1, 2.0))
+    color_jitter = transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.25)
+    strong_aug = images
+    if random.random() < 0.8:
+        strong_aug = color_jitter(strong_aug)
+    strong_aug = transforms.RandomGrayscale(p=0.2)(strong_aug)
+    #if random.random() < 0.5:
+    #    strong_aug = blurring_image(strong_aug)
+    return strong_aug
+
+def data_aug_wo_colorjitter(images):
+    kernel_size = int(random.random() * 4.95)
+    kernel_size = kernel_size + 1 if kernel_size % 2 == 0 else kernel_size
+    blurring_image = transforms.GaussianBlur(kernel_size, sigma=(0.1, 2.0))
+    color_jitter = transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.25)
+    strong_aug = images
+    #if random.random() < 0.8:
+    #    strong_aug = color_jitter(strong_aug)
+    strong_aug = transforms.RandomGrayscale(p=0.2)(strong_aug)
+    if random.random() < 0.5:
+        strong_aug = blurring_image(strong_aug)
+    return strong_aug
