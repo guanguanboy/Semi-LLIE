@@ -41,7 +41,7 @@ class TrainerWithGrad:
         #self.loss_cr = ContrastLoss().cuda()
         #self.loss_cr = SAMContrastLoss().cuda()
         self.loss_cr = RAMContrastLoss().cuda()
-        self.consistency = 0.2
+        self.consistency = 0.1
         self.consistency_rampup = 100.0
         self.iqa_metric = pyiqa.create_metric('musiq', as_loss=True).cuda()
         vgg_model = vgg16(pretrained=True).features[:16]
