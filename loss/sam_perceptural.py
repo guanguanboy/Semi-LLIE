@@ -168,10 +168,10 @@ def sam_generate_features_torch(sam_model, image, layer_name_mapping, device):
     module_outputs = forward_with_hooks(model, resampled_image)
 
     # 打印每个模块的输出形状
-    for module_name, output in module_outputs.items():
-        print(f'{module_name}: {output.shape}')
+    #for module_name, output in module_outputs.items():
+    #    print(f'{module_name}: {output.shape}')
     
-    print('--------------------------')
+    #print('--------------------------')
 
     return list(module_outputs.values())   
 
@@ -324,8 +324,8 @@ class SAMPerpetualLoss(nn.Module):
 
     def forward(self, low_light, gt):
         loss = []
-        low_light_features = sam_generate_features(self.sam, low_light, self.layer_name_mapping, self.device)
-        gt_features = sam_generate_features(self.sam, gt, self.layer_name_mapping, self.device)
+        low_light_features = sam_generate_features_torch(self.sam, low_light, self.layer_name_mapping, self.device)
+        gt_features = sam_generate_features_torch(self.sam, gt, self.layer_name_mapping, self.device)
         for lowlight_feature, gt_feature in zip(low_light_features, gt_features):
             loss.append(F.mse_loss(lowlight_feature, gt_feature))
 
