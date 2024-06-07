@@ -439,3 +439,44 @@ def data_aug_wo_colorjitter(images):
     if random.random() < 0.5:
         strong_aug = blurring_image(strong_aug)
     return strong_aug
+
+class AddGaussianNoise(object):
+    def __init__(self, mean=0.0, std=1.0, level=5):
+        self.mean = mean
+        self.std = std
+        self.level = level
+
+    def __call__(self, tensor):
+        noise = torch.randn(tensor.shape) * self.std + self.mean
+        noise = noise * self.level  # 根据level调节噪声的强度
+        return tensor + noise
+    
+class TrainUnlabeledwithNoise(data.Dataset):
+    def __init__(self, dataroot, phase, finesize):
+        super().__init__()
+        self.phase = phase
+        self.root = dataroot
+        self.fineSize = finesize
+
+        self.dir_A = os.path.join(self.root, self.phase + '/input')
+
+
+        # image path
+        self.A_paths = sorted(make_dataset(self.dir_A))
+
+
+        # transform
+        self.transform = ToTensor()  # [0,1]
+        self.add_noise = AddGaussianNoise(mean=0.0, std=1.0, level=5)
+
+    def __getitem__(self, index):
+        A = Image.open(self.A_paths[index]).convert("RGB")
+
+        A = A.resize((self.fineSize, self.fineSize), Image.ANTIALIAS)
+        # strong augmentation
+        strong_data = data_aug(A)
+
+        tensor_w = self.transform(A)
+        tensor_s = self.transform(strong_data)
+        tensor_s = self.add_noise(tensor_s)
+        return tensor_w, tensor_s
