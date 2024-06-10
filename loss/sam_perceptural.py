@@ -314,9 +314,10 @@ class SAMPerpetualLoss(nn.Module):
         self.sam_encoder_layers = self.sam.image_encoder
         print(self.sam_encoder_layers)
         self.layer_name_mapping = [
+            "GELU_3",
             "Conv2d_BN_33",
             "Conv2d_BN_57",
-            "LayerNorm2d_250"
+            #"LayerNorm2d_250"
         ]        
         #self.ab = ablation
         #self.l1 = nn.L1Loss().to(self.device)
