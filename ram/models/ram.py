@@ -209,6 +209,61 @@ class RAM(nn.Module):
 
             return image_embeds, logits, targets
 
+    def condition_forward_new(self,
+                 image,
+                 threshold=0.68,
+                 condition_flag=None,
+                 tag_input=None,
+                 only_feature=True,
+                 layer_name_mapping=None,
+                 ):
+
+        model = self.visual_encoder
+        #print(model)
+        # 设置模型为评估模式
+        model.eval()
+
+        #print("begin print")
+        # 遍历模型的每个模块并执行推理
+        def forward_with_hooks(model, input_data):
+            outputs = {}
+
+            def hook_fn(module, input, output):
+                # 使用 module 名称和索引生成唯一标识符
+                module_name = f'{module.__class__.__name__}_{hook_fn.counter}'
+                if module_name in layer_name_mapping:
+                    outputs[module_name] = output
+                hook_fn.counter += 1
+
+            # 初始化钩子函数的计数器
+            hook_fn.counter = 0
+
+            hooks = []
+            for idx, (name, module) in enumerate(model.named_modules()):
+                # 注册前向钩子
+                hooks.append(module.register_forward_hook(hook_fn))
+            
+            # 执行推理
+            with torch.no_grad():
+                model(input_data)
+            
+            # 移除钩子
+            for hook in hooks:
+                hook.remove()
+            
+            return outputs
+
+        # 获取各个模块的输出
+        module_outputs = forward_with_hooks(model, image)
+
+        # 打印每个模块的输出形状
+        #for module_name, output in module_outputs.items():
+        #    print(f'{module_name}: {output.shape}')
+        
+        #print('--------------------------')
+
+        return list(module_outputs.values())   
+    
     def generate_tag(self,
                  image,
                  threshold=0.68,
