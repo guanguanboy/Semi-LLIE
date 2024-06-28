@@ -8,13 +8,14 @@ import pyiqa
 import torch
 from skimage.metrics import peak_signal_noise_ratio as psnr
 from skimage.metrics import mean_squared_error as mse
-from skimage.metrics import structural_similarity as ssim
+#from skimage.metrics import structural_similarity as ssim
 from tqdm import tqdm
 import numpy as np
 import pytorch_ssim
 import torchvision.transforms.functional as tf
 from PIL import Image
 #os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+from utils_new import *
 
 # list all available metrics
 print(pyiqa.list_models())
@@ -22,9 +23,10 @@ print(pyiqa.list_models())
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 fid_metric = pyiqa.create_metric('fid').to(device)
 #fid_score = fid_metric('/data/liguanlin/codes/research_project/Semi-UIR/data/unlabeled_test/input/', '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0405/')
-GT_path = '/data/liguanlin/codes/research_project/Semi-UIR/data/LOLv1/val/GT/'
-result_path = '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0410_on_LOLv1_new/'
-fid_score = fid_metric('/data/liguanlin/codes/research_project/Semi-UIR/data/LOLv1/val/input/', '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0410_on_LOLv1_new/')
+GT_path = '/data/liguanlin/codes/research_project/Semi-UIR/data/myLSRW/val/GT/'
+result_path = '/data/liguanlin/codes/research_project/Semi-UIR/result/ckpt_begin_0606_on_myLSRW_with_mambalowlight/'
+input_path = '/data/liguanlin/codes/research_project/Semi-UIR/data/myLSRW/val/input/'
+fid_score = fid_metric(input_path, result_path)
 print('fid_score=', fid_score)
 
 
@@ -50,6 +52,7 @@ ssim_scores = []
 lpips_scores = []
 mse_scores = []
 niqe_scores = []
+ssim_scores_new = []
 
 for i, enhanced_path in enumerate(tqdm(enhanced_paths)):
     GT_path = GT_paths[i]
@@ -96,8 +99,10 @@ for i, enhanced_path in enumerate(tqdm(enhanced_paths)):
     psnr_score = psnr(enhanced_np, gt_np, data_range=255)
     psnr_scores2.append(psnr_score)
 
-    ssim_score = ssim(enhanced_np, gt_np, channel_axis=2,data_range=255, win_size=11)
+    #ssim_score = ssim(enhanced_np, gt_np, channel_axis=2,data_range=255, win_size=11)
+    ssim_score = ssim(enhanced_np, gt_np)
     ssim_scores2.append(ssim_score)
+
 
 
 def calculate_average(lst):
