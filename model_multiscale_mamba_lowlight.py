@@ -11,7 +11,10 @@ from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 from mamba_ssm.ops.selective_scan_interface import selective_scan_fn, selective_scan_ref
 from einops import rearrange, repeat
 
-
+import os
+from img_util import save_feature_map
+# 定义全局变量
+featmap_index = 0
 
 NEG_INF = -1000000
 
@@ -751,6 +754,17 @@ class MambaLowlight(nn.Module):
             x_first = self.conv_first(torch.cat([x, illu_map], dim=1))
             #print('denosing branch')
             res = self.conv_after_body(self.forward_features(x_first)) + x_first
+            
+            """
+            global featmap_index
+            featmap_index = featmap_index + 1
+            featmap_rootpath = 'featsmaps_results/featmaps'
+            if not os.path.exists(featmap_rootpath):
+                os.mkdir(featmap_rootpath)
+            feats_file_name = f'featsmaps_results/featmaps/{featmap_index}_feats.png'
+
+            save_feature_map(res, feats_file_name)      
+            """
             x = x + self.conv_last(res)
 
         x = x / self.img_range + self.mean
