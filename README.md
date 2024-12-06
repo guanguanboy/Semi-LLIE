@@ -1,17 +1,13 @@
-# Semantics-aware Contrastive Semi-supervised Learning for Low-light Drone Image Enhancement
-
-*Equal Contributions
-+Corresponding Author
-
-Xidian University, McMaster University
+# Semi-LLIE: Semi-supervised Contrastive Learning with Mamba-based Low-light Image Enhancement
 
 ## Introduction
-This is the official repository for our recent paper, "Semantics-aware Contrastive Semi-supervised Learning for Low-light Drone Image Enhancement .
+This is the official repository for our recent paper, "Semi-LLIE: Semi-supervised Contrastive Learning with Mamba-based Low-light Image Enhancement"
 
 ## Abstract
-Despite the impressive advancements made in recent low-light image enhancement techniques, the scarcity of annotated data has emerged as a significant obstacle to further advancements. To address this issue, we propose a mean-teacher-based Semi-supervised low-light enhancement framework to utilize the unlabeled data for model optimization. However, the naive implementation of the mean-teacher method encounters two primary challenges. The utilization of pixel-wise distance in the mean-teacher method may lead to the overfitting of incorrect labels, which results in confirmation bias. To mitigate this issue, we introduce semantics-aware contrastive regularization as a preventive measure against overfitting on incorrect labels.
-
-Experimental results demonstrate that our method achieves remarkable quantitative and qualitative improvements over the existing methods.
+Despite the impressive advancements made in recent low-light image enhancement techniques, the scarcity of paired data has emerged as a significant obstacle to further advancements. This work proposes a mean-teacher-based semi-supervised low-light enhancement (Semi-LLIE) framework that integrates the unpaired data into model training. The mean-teacher technique is a prominent semi-supervised learning method, successfully adopted for addressing high-level and low-level vision tasks. However, two primary issues hinder the naive mean-teacher method from attaining optimal performance in low-light image enhancement. Firstly,  pixel-wise consistency loss is insufficient for transferring realistic illumination distribution from the teacher to the student model, which results in color cast in the enhanced images. Secondly, cutting-edge image enhancement approaches fail to effectively cooperate with the mean-teacher framework to restore detailed information in dark areas due to their tendency to overlook modeling structured information within local regions. To mitigate the above issues, we first introduce a semantic-aware contrastive loss to faithfully transfer the illumination distribution, contributing to enhancing images with natural colors. 
+Then, we design a Mamba-based low-light image enhancement backbone to effectively enhance Mamba's local region pixel relationship representation ability with a multi-scale feature learning scheme, facilitating the generation of images with rich textural details. 
+Further, we propose novel perceptive loss based on the large-scale vision-language Recognize Anything Model (RAM) to help generate enhanced images with richer textual details.
+The experimental results indicate that our Semi-LLIE surpasses existing methods in both quantitative and qualitative metrics.
 
 <img src='overview.png'>
 
@@ -19,9 +15,22 @@ Experimental results demonstrate that our method achieves remarkable quantitativ
 
 ## Dependencies
 
-- Ubuntu==18.04
-- Pytorch==1.8.1
-- CUDA==11.1
+- Ubuntu==20.04
+- Pytorch==2.0.1
+- CUDA==12.4
+
+## Mamba Env Installation
+```
+conda create -n mambaenv python=3.9
+conda activate mambaenv
+conda install cudatoolkit==11.8 -c nvidia
+conda install pytorch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 pytorch-cuda=11.8 -c pytorch -c nvidia
+conda install -c "nvidia/label/cuda-11.8.0" cuda-nvcc
+pip install causal-conv1d -i https://pypi.tuna.tsinghua.edu.cn/simple/
+pip install mamba_ssm==1.2.0 -i https://pypi.tuna.tsinghua.edu.cn/simple/ --verbose
+```
+
+## Other Dependencies
 
 Other dependencies are listed in `requirements.txt`
 
@@ -146,12 +155,11 @@ CUDA_VISIBLE_DEVICES=2 nohup python train_lolv1.py --gpus 1 --train_batchsize 6 
 If you use the code in this repo for your work, please cite the following bib entries:
 
 ```latex
-@inproceedings{huang2023contrastive,
-  title={Contrastive Semi-supervised Learning for Underwater Image Restoration via Reliable Bank},
-  author={Huang, Shirui and Wang, Keyan and Liu, Huan and Chen, Jun and Li, Yunsong},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={18145--18155},
-  year={2023}
+@article{li2024semi,
+  title={Semi-LLIE: Semi-supervised Contrastive Learning with Mamba-based Low-light Image Enhancement},
+  author={Li, Guanlin and Zhang, Ke and Wang, Ting and Li, Ming and Zhao, Bin and Li, Xuelong},
+  journal={arXiv preprint arXiv:2409.16604},
+  year={2024}
 }
 ```
 
