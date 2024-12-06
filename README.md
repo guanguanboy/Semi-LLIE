@@ -84,6 +84,12 @@ pip install timm -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install Pillow==9.2.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
+If the following error occured, please update numpy version to 1.26.4
+ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+
+```
+pip install numpy==1.26.4
+```
 ## Data Preparation
 
 Run `data_split.py` to randomly split your paired datasets into training, validation and testing set.
