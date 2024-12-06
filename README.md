@@ -63,9 +63,8 @@ cd MobileSAM; pip install -e .
 The following optional dependencies are necessary for mask post-processing, saving masks in COCO format, the example notebooks, and exporting the model in ONNX format. `jupyter` is also required to run the example notebooks.
 
 ```
-pip install opencv-python timm transformers fairscale loralib pyiqa
+pip install opencv-python timm transformers fairscale loralib pyiqa -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
--i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ```
 pip install adamp -i https://pypi.tuna.tsinghua.edu.cn/simple
