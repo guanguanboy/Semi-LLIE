@@ -150,7 +150,7 @@ For continue trainning, please setup:
     parser.add_argument('--resume', default='False', type=str, help='if resume')
     parser.add_argument('--resume_path', default='./model/ckpt_begin_0408_on_visdrone/model_e160.pth', type=str, help='if resume')
 ```
-Run `train.py` to start training.
+Run `train.py` or `train_with_grad_mambaretinex.py` to start training.
 
 ```
 CUDA_VISIBLE_DEVICES=2 nohup python train_lolv1.py --gpus 1 --train_batchsize 6 > logs/train_on_lolv1_visdrone_0414.txt

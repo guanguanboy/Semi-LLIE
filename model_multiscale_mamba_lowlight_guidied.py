@@ -229,7 +229,6 @@ class GFM(nn.Module):
     def forward(self, *inp_feats):
         assert len(inp_feats) == self.feature_num
         shortcut = inp_feats[0]
-        print(inp_feats[0].shape, inp_feats[1].shape)
         x = torch.cat(inp_feats, dim=1)
         x = self.pwconv(x)
         x1, x2 = self.dwconv(x).chunk(2, dim=1)
@@ -471,8 +470,8 @@ class VSSBlock(nn.Module):
         input_permuted = input.permute(0,3,1,2)
         input_permuted = self.fuse(input_permuted, inp_feats)
         input_permuted = input_permuted.permute(0,2,3,1)
-        x = self.ln_1(input_permuted)
 
+        x = self.ln_1(input_permuted)
 
         x = input*self.skip_scale + self.drop_path(self.self_attention(x))
         x = x*self.skip_scale2 + self.conv_blk(self.ln_2(x).permute(0, 3, 1, 2).contiguous()).permute(0, 2, 3, 1).contiguous()
@@ -607,7 +606,7 @@ class Illumination_Estimator(nn.Module):
         return illu_map, illu_fea
     
 #@ARCH_REGISTRY.register()
-class MambaLowlight(nn.Module):
+class MambaLowlightguided(nn.Module):
     r""" MambaIR Model
            A PyTorch impl of : `A Simple Baseline for Image Restoration with State Space Model `.
 
@@ -646,7 +645,7 @@ class MambaLowlight(nn.Module):
                  upsampler='',
                  resi_connection='1conv',
                  **kwargs):
-        super(MambaLowlight, self).__init__()
+        super(MambaLowlightguided, self).__init__()
         num_in_ch = in_chans
         num_out_ch = in_chans
         num_feat = 64
@@ -1025,7 +1024,7 @@ class Upsample(nn.Sequential):
 
 if __name__ == '__main__':
     from fvcore.nn import FlopCountAnalysis
-    model = MambaLowlight(image_size=256).cuda()
+    model = MambaLowlightguided(image_size=256).cuda()
     print(model)
     inputs = torch.randn((1, 3, 256, 256)).cuda()
     flops = FlopCountAnalysis(model,inputs)
